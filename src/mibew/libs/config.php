@@ -17,6 +17,10 @@
  * limitations under the License.
  */
 
+require_once __DIR__ . '/../adriatic_bootstrap_inc.php';
+require_once __DIR__ . '/../../../../../../www_new/lib/util/WebChatToolkit.class.php';
+$dbConfigVars = WebChatToolkit::getChatDbConfigVars();
+
 /*
  *  Application path on server
  */
@@ -30,11 +34,11 @@ $mibew_encoding = "utf-8";
 /*
  *  MySQL Database parameters
  */
-$mysqlhost = "localhost";
-$mysqldb = "mibew_db";
-$mysqllogin = "mibew";
-$mysqlpass = "123";
-$mysqlprefix = "";
+$mysqlhost = $dbConfigVars['hostname'];
+$mysqldb = $dbConfigVars['dbname'];
+$mysqllogin = $dbConfigVars['username'];
+$mysqlpass = $dbConfigVars['password'];
+$mysqlprefix = "mibewchat_";
 
 $dbencoding = "utf8";
 $force_charset_in_connection = true;
