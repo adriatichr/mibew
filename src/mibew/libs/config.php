@@ -24,7 +24,7 @@ $dbConfigVars = WebChatToolkit::getChatDbConfigVars();
 /*
  *  Application path on server
  */
-$mibewroot = "/mibew";
+$mibewroot = "/chat";
 
 /*
  *  Internal encoding
