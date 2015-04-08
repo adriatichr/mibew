@@ -21,7 +21,7 @@ require_once('../libs/common.php');
 require_once('../libs/operator.php');
 
 if (check_login(false)) {
-	header("Location: $mibewroot/operator/");
+	header("Location: $mibewroot/operator/index.php");
 	exit;
 }
 
