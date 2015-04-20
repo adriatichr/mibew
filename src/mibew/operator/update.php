@@ -23,6 +23,9 @@ require_once('../libs/userinfo.php');
 require_once('../libs/operator.php');
 require_once('../libs/groups.php');
 
+if(empty($_SESSION))
+	session_start();
+
 $operator = get_logged_in();
 if (!$operator) {
 	start_xml_output();
