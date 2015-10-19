@@ -381,7 +381,7 @@ function getgetparam($name, $default = '')
 function connect()
 {
 	global $mysqlhost, $mysqllogin, $mysqlpass, $mysqldb, $dbencoding, $force_charset_in_connection;
-	if (!extension_loaded("mysql")) {
+	if (!function_exists("mysql_connect")) {
 		die('Mysql extension is not loaded');
 	}
 	$link = @mysql_connect($mysqlhost, $mysqllogin, $mysqlpass)
