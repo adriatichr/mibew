@@ -492,7 +492,7 @@ function ping_thread($thread, $isuser, $istyping)
 	}
 
 	if ($lastping > 0 && abs($current - $lastping) > $connection_timeout) {
-		$params[$isuser ? "lastpingagent" : "lastpinguser"] = "0";
+		$params[$isuser ? "lastpingagent" : "lastpinguser"] = "NULL";
 		if (!$isuser) {
 			$message_to_post = getstring_("chat.status.user.dead", $thread['locale']);
 			post_message_($thread['threadid'], $kind_for_agent, $message_to_post, $link, null, $lastping + $connection_timeout);
@@ -562,7 +562,7 @@ function close_old_threads($link)
 	}
 	$next_revision = next_revision($link);
 	$query = sprintf("update ${mysqlprefix}chatthread set lrevision = %s, dtmmodified = CURRENT_TIMESTAMP, istate =  %s " .
-			"where istate <> %s and istate <> %s and lastpingagent <> 0 and lastpinguser <> 0 and " .
+			"where istate <> %s and istate <> %s and lastpingagent is not null and lastpinguser is not null and " .
 			"(ABS(UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(lastpinguser)) > %s and " .
 			"ABS(UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - UNIX_TIMESTAMP(lastpingagent)) > %s)",
 			intval($next_revision),
@@ -580,7 +580,7 @@ function thread_by_id_($id, $link)
 	global $mysqlprefix;
 	return select_one_row("select threadid,userName,agentName,agentId,lrevision,istate,ltoken,userTyping,agentTyping" .
 						  ",unix_timestamp(dtmmodified) as modified, unix_timestamp(dtmcreated) as created" .
-						  ",remote,referer,locale,unix_timestamp(lastpinguser) as lpuser,unix_timestamp(lastpingagent) as lpagent, unix_timestamp(CURRENT_TIMESTAMP) as current,nextagent,shownmessageid,userid,userAgent,groupid" .
+						  ",remote,referer,locale,IF(lastpinguser is not null, unix_timestamp(lastpinguser), 0) as lpuser,IF(lastpingagent is not null, unix_timestamp(lastpingagent), 0) as lpagent, unix_timestamp(CURRENT_TIMESTAMP) as current,nextagent,shownmessageid,userid,userAgent,groupid" .
 						  " from ${mysqlprefix}chatthread where threadid = " . intval($id), $link);
 }
 
@@ -721,7 +721,7 @@ function notify_operators($thread, $firstmessage, $link)
 	global $settings, $mysqlprefix;
 	if ($settings['enablejabber'] == 1) {
 		$groupid = $thread['groupid'];
-		$query = "select ${mysqlprefix}chatoperator.operatorid as opid, inotify, vcjabbername, vcemail, (unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time from ${mysqlprefix}chatoperator";
+		$query = "select ${mysqlprefix}chatoperator.operatorid as opid, inotify, vcjabbername, vcemail, (unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time from ${mysqlprefix}chatoperator";
 		if ($groupid) {
 			$query .= ", ${mysqlprefix}chatgroupoperator where groupid = " . intval($groupid) . " and ${mysqlprefix}chatoperator.operatorid = ${mysqlprefix}chatgroupoperator.operatorid and istatus = 0";
 		} else {

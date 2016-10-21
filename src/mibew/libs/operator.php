@@ -74,7 +74,7 @@ function operator_get_all()
 	global $mysqlprefix;
 	$link = connect();
 
-	$query = "select operatorid, vclogin, vclocalename, vccommonname, istatus, (unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time " .
+	$query = "select operatorid, vclogin, vclocalename, vccommonname, istatus, (unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
 			 "from ${mysqlprefix}chatoperator order by vclogin";
 	$operators = select_multi_assoc($query, $link);
 	mysql_close($link);
@@ -173,7 +173,7 @@ function has_online_operators($groupid = "")
 	global $settings, $mysqlprefix;
 	loadsettings();
 	$link = connect();
-	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time from ${mysqlprefix}chatoperator";
+	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time from ${mysqlprefix}chatoperator";
 	if ($groupid) {
 		$query .= ", ${mysqlprefix}chatgroupoperator where groupid = " . intval($groupid) . " and ${mysqlprefix}chatoperator.operatorid = " .
 				  "${mysqlprefix}chatgroupoperator.operatorid and istatus = 0";
@@ -189,7 +189,7 @@ function is_operator_online($operatorid, $link)
 {
 	global $settings, $mysqlprefix;
 	loadsettings_($link);
-	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time " .
+	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
 			 "from ${mysqlprefix}chatoperator where operatorid = " . intval($operatorid);
 	$row = select_one_row($query, $link);
 	return $row['time'] < $settings['online_timeout'] && $row['total'] == 1;
@@ -308,7 +308,7 @@ function setup_redirect_links($threadid, $token)
 	$limit = $p['limit'];
 
 	$operators = select_multi_assoc(db_build_select(
-										"operatorid, vclogin, vclocalename, vccommonname, istatus, (unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time",
+										"operatorid, vclogin, vclocalename, vccommonname, istatus, (unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time",
 										"${mysqlprefix}chatoperator", array(), "order by vclogin " . $limit), $link);
 
 	$groups = array_slice($groups, $p['start'], $p['end'] - $p['start']);
@@ -400,12 +400,12 @@ function get_groups($link, $checkaway)
 	$query = "select ${mysqlprefix}chatgroup.groupid as groupid, vclocalname, vclocaldescription" .
 			 ", (SELECT count(*) from ${mysqlprefix}chatgroupoperator where ${mysqlprefix}chatgroup.groupid = " .
 			 "${mysqlprefix}chatgroupoperator.groupid) as inumofagents" .
-			 ", (SELECT min(unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time " .
+			 ", (SELECT min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
 			 "from ${mysqlprefix}chatgroupoperator, ${mysqlprefix}chatoperator where istatus = 0 and " .
 			 "${mysqlprefix}chatgroup.groupid = ${mysqlprefix}chatgroupoperator.groupid " .
 			 "and ${mysqlprefix}chatgroupoperator.operatorid = ${mysqlprefix}chatoperator.operatorid) as ilastseen" .
 			 ($checkaway
-					 ? ", (SELECT min(unix_timestamp(CURRENT_TIMESTAMP)-unix_timestamp(dtmlastvisited)) as time " .
+					 ? ", (SELECT min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
 					   "from ${mysqlprefix}chatgroupoperator, ${mysqlprefix}chatoperator where istatus <> 0 and " .
 					   "${mysqlprefix}chatgroup.groupid = ${mysqlprefix}chatgroupoperator.groupid " .
 					   "and ${mysqlprefix}chatgroupoperator.operatorid = ${mysqlprefix}chatoperator.operatorid) as ilastseenaway"

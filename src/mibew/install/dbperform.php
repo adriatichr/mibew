@@ -138,7 +138,7 @@ if ($act == "silentcreateall") {
 		}
 
 		if (in_array("${mysqlprefix}chatoperator.dtmrestore", $absent)) {
-			runsql("ALTER TABLE ${mysqlprefix}chatoperator ADD dtmrestore datetime DEFAULT 0", $link);
+			runsql("ALTER TABLE ${mysqlprefix}chatoperator ADD dtmrestore datetime", $link);
 		}
 
 		if (in_array("${mysqlprefix}chatoperator.vcrestoretoken", $absent)) {
