@@ -18,8 +18,6 @@
  */
 
 require_once __DIR__ . '/../adriatic_bootstrap_inc.php';
-require_once __DIR__ . '/../../../../../../www_new/lib/util/WebChatToolkit.class.php';
-$dbConfigVars = WebChatToolkit::getChatDbConfigVars();
 
 /*
  *  Application path on server
@@ -34,10 +32,10 @@ $mibew_encoding = "utf-8";
 /*
  *  MySQL Database parameters
  */
-$mysqlhost = $dbConfigVars['hostname'];
-$mysqldb = $dbConfigVars['dbname'];
-$mysqllogin = $dbConfigVars['username'];
-$mysqlpass = $dbConfigVars['password'];
+$mysqlhost = 'zelim-defaultnu-db-konekciju';
+$mysqldb = 'zelim-defaultnu-db-konekciju';
+$mysqllogin = 'zelim-defaultnu-db-konekciju';
+$mysqlpass = 'zelim-defaultnu-db-konekciju';
 $mysqlprefix = "mibewchat_";
 
 $dbencoding = "utf8";
