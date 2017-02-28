@@ -44,7 +44,7 @@ $force_charset_in_connection = true;
 /*
  *  Mailbox
  */
-$mibew_mailbox = "mibew@yourdomain.com";
+$mibew_mailbox = "noreply@adriatic.hr";
 $mail_encoding = "utf-8";
 
 /*
