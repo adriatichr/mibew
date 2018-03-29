@@ -23,7 +23,7 @@ require_once('../libs/userinfo.php');
 require_once('../libs/operator.php');
 require_once('../libs/groups.php');
 
-if(empty($_SESSION))
+if ('' === session_id())
 	session_start();
 
 $operator = get_logged_in();
