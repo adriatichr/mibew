@@ -727,6 +727,7 @@ function notify_operators($thread, $firstmessage, $link)
 		} else {
 			$query .= " where istatus = 0";
 		}
+		$query .= " and idisabled = 0";
 		$query .= " and inotify = 1";
 		$result = select_multi_assoc($query, $link);
 		$text = getstring2_("notify.new.text", array(

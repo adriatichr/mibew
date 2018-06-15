@@ -84,7 +84,7 @@ function operator_get_all()
 function operator_is_online($operator)
 {
 	global $settings;
-	return $operator['time'] < $settings['online_timeout'];
+	return $operator['idisabled'] == 0 && ($operator['istatus']) == 0 && ($operator['time'] < $settings['online_timeout']);
 }
 
 function operator_is_available($operator)
@@ -176,9 +176,9 @@ function has_online_operators($groupid = "")
 	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time from ${mysqlprefix}chatoperator";
 	if ($groupid) {
 		$query .= ", ${mysqlprefix}chatgroupoperator where groupid = " . intval($groupid) . " and ${mysqlprefix}chatoperator.operatorid = " .
-				  "${mysqlprefix}chatgroupoperator.operatorid and istatus = 0";
+				  "${mysqlprefix}chatgroupoperator.operatorid and istatus = 0 and idisabled = 0";
 	} else {
-		$query .= " where istatus = 0";
+		$query .= " where istatus = 0 and idisabled = 0";
 	}
 	$row = select_one_row($query, $link);
 	mysql_close($link);
@@ -189,10 +189,10 @@ function is_operator_online($operatorid, $link)
 {
 	global $settings, $mysqlprefix;
 	loadsettings_($link);
-	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
+	$query = "select count(*) as total, min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time, idisabled " .
 			 "from ${mysqlprefix}chatoperator where operatorid = " . intval($operatorid);
 	$row = select_one_row($query, $link);
-	return $row['time'] < $settings['online_timeout'] && $row['total'] == 1;
+	return $row['idisabled'] == 0 && $row['time'] < $settings['online_timeout'] && $row['total'] == 1;
 }
 
 function get_operator_name($operator)
@@ -401,7 +401,7 @@ function get_groups($link, $checkaway)
 			 ", (SELECT count(*) from ${mysqlprefix}chatgroupoperator where ${mysqlprefix}chatgroup.groupid = " .
 			 "${mysqlprefix}chatgroupoperator.groupid) as inumofagents" .
 			 ", (SELECT min(unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
-			 "from ${mysqlprefix}chatgroupoperator, ${mysqlprefix}chatoperator where istatus = 0 and " .
+			 "from ${mysqlprefix}chatgroupoperator, ${mysqlprefix}chatoperator where istatus = 0 and idisabled = 0 and " .
 			 "${mysqlprefix}chatgroup.groupid = ${mysqlprefix}chatgroupoperator.groupid " .
 			 "and ${mysqlprefix}chatgroupoperator.operatorid = ${mysqlprefix}chatoperator.operatorid) as ilastseen" .
 			 ($checkaway
