@@ -74,7 +74,7 @@ function operator_get_all()
 	global $mysqlprefix;
 	$link = connect();
 
-	$query = "select operatorid, vclogin, vclocalename, vccommonname, istatus, idisabled (unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
+	$query = "select operatorid, vclogin, vclocalename, vccommonname, istatus, idisabled, (unix_timestamp(CURRENT_TIMESTAMP)-IF(dtmlastvisited is not null, unix_timestamp(dtmlastvisited), 0)) as time " .
 			 "from ${mysqlprefix}chatoperator order by vclogin";
 	$operators = select_multi_assoc($query, $link);
 	mysql_close($link);
