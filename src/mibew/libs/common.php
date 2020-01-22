@@ -319,11 +319,7 @@ function getrawparam($name)
 {
 	global $mibew_encoding;
 	if (isset($_POST[$name])) {
-		$value = myiconv("utf-8", $mibew_encoding, $_POST[$name]);
-		if (get_magic_quotes_gpc()) {
-			$value = stripslashes($value);
-		}
-		return $value;
+		return myiconv("utf-8", $mibew_encoding, $_POST[$name]);
 	}
 	die("no " . $name . " parameter");
 }
@@ -333,11 +329,7 @@ function getparam($name)
 {
 	global $mibew_encoding;
 	if (isset($_POST[$name])) {
-		$value = myiconv(getoutputenc(), $mibew_encoding, $_POST[$name]);
-		if (get_magic_quotes_gpc()) {
-			$value = stripslashes($value);
-		}
-		return $value;
+		return myiconv(getoutputenc(), $mibew_encoding, $_POST[$name]);
 	}
 	die("no " . $name . " parameter");
 }
@@ -371,11 +363,7 @@ function getgetparam($name, $default = '')
 	if (!isset($_GET[$name]) || !$_GET[$name]) {
 		return $default;
 	}
-	$value = myiconv("utf-8", $mibew_encoding, unicode_urldecode($_GET[$name]));
-	if (get_magic_quotes_gpc()) {
-		$value = stripslashes($value);
-	}
-	return $value;
+	return myiconv("utf-8", $mibew_encoding, unicode_urldecode($_GET[$name]));
 }
 
 function connect()
